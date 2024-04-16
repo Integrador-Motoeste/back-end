@@ -8,8 +8,8 @@ from ..users.models import User
 class Rating(models.Model):
     class Meta:
         ordering = ["title"]
-        verbose_name = ["Avaliação"]
-        verbose_name_plural = ["Avaliações"]
+        verbose_name = "Avaliação"
+        verbose_name_plural = "Avaliações"
 
     title = models.CharField(max_length=50, verbose_name="Titulo")
     text = models.TextField(verbose_name="Comentário", blank=True, null=True)
