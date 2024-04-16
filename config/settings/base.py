@@ -87,11 +87,16 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
+    "django_cpf_cnpj",
 ]
 
 LOCAL_APPS = [
     "ride_app_back.users",
     # Your stuff: custom apps go here
+    "ride_app_back.motorcycles",
+    "ride_app_back.ratings",
+    "ride_app_back.rides",
+    "simple_history",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -149,6 +154,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 # STATIC
