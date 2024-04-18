@@ -49,7 +49,7 @@ class User(AbstractUser):
         return reverse("users:detail", kwargs={"username": self.username})
 
 
-class Pilot:
+class Pilot(models.Model):
     class Meta:
         ordering = ["user__name"]
         verbose_name = "Piloto"
