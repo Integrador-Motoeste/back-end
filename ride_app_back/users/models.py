@@ -4,8 +4,6 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_cpf_cnpj.fields import CPFField
 
-from ..motorcycles.models import Motorcycle
-
 
 class User(AbstractUser):
     """
@@ -49,7 +47,7 @@ class User(AbstractUser):
         return reverse("users:detail", kwargs={"username": self.username})
 
 
-class Pilot:
+class Pilot(models.Model):
     class Meta:
         ordering = ["user__name"]
         verbose_name = "Piloto"
@@ -59,12 +57,6 @@ class Pilot:
         User,
         verbose_name=_("Usuário"),
         related_name="user",
-        on_delete=models.CASCADE,
-    )
-    motorcycle = models.ForeignKey(
-        Motorcycle,
-        verbose_name="Motos",
-        related_name="motorcycles",
         on_delete=models.CASCADE,
     )
     cnh = models.IntegerField()
