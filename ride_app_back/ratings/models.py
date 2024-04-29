@@ -1,7 +1,6 @@
 from django.core.validators import MaxValueValidator
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Avg
 
 from ..users.models import User
 
@@ -38,10 +37,3 @@ class Rating(models.Model):
         verbose_name="Destinatário",
         related_name="Ratings",
     )
-
-    @property
-    def average_rating(self, user) -> float:
-        return (
-            Rating.objects.filter(user=user).aggregate(Avg("rating"))["rating__avg"]
-            or 0
-        )
