@@ -274,3 +274,7 @@ dump.rdb
 ride_app_back/media/
 
 .pytest_cache/
+
+
+#CUSTOM
+migrations/
