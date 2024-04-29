@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Avg
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_cpf_cnpj.fields import CPFField
@@ -19,6 +20,7 @@ class User(AbstractUser):
 
     # First and last name do not cover name patterns around the globe
     name = models.CharField(_("Nome do Usuário"), blank=True, max_length=255)
+    email = models.EmailField(_("email address"), unique=True)
     surname = models.CharField(_("Sobrenome"), blank=True, max_length=255)
     cpf = CPFField(verbose_name=_("CPF"))
     first_name = None  # type: ignore[assignment]
@@ -37,6 +39,10 @@ class User(AbstractUser):
     number = models.CharField(verbose_name=_("Telefone"), max_length=15)
     picture = models.ImageField(upload_to="uploads", verbose_name="Imagem")
 
+    @property
+    def average_rating(self) -> float:
+        return self.Ratings.objects.all().aggregate(Avg("rating"))["rating__avg"] or 0
+
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
 
@@ -45,6 +51,12 @@ class User(AbstractUser):
 
         """
         return reverse("users:detail", kwargs={"username": self.username})
+
+    def __str__(self) -> str:
+        return self.username
+
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
 
 
 class Pilot(models.Model):

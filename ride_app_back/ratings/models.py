@@ -1,3 +1,5 @@
+from django.core.validators import MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.db import models
 
 from ..users.models import User
@@ -13,16 +15,25 @@ class Rating(models.Model):
 
     title = models.CharField(max_length=50, verbose_name="Titulo")
     text = models.TextField(verbose_name="Comentário", blank=True, null=True)
-    rating = models.IntegerField(verbose_name="Nota")
+    rating = models.DecimalField(
+        verbose_name="Nota",
+        decimal_places=2,
+        max_digits=3,
+        validators=[
+            MaxValueValidator(5),
+            MinValueValidator(1),
+        ],
+        default=1,
+    )
     owner = models.ForeignKey(
         User,
-        verbose_name="Perfil",
+        verbose_name="Dono",
         on_delete=models.CASCADE,
-        related_name="ratings",
+        related_name="OwnerRatings",
     )
     user = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
-        verbose_name="Cliente",
-        related_name="rating",
+        verbose_name="Destinatário",
+        related_name="Ratings",
     )
