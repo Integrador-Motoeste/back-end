@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Avg
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_cpf_cnpj.fields import CPFField
@@ -40,10 +41,7 @@ class User(AbstractUser):
 
     @property
     def average_rating(self) -> float:
-        return (
-            Rating.objects.filter(post=self).aggregate(Avg("rating"))["rating__avg"]
-            or 0
-        )
+        return self.Ratings.objects.all().aggregate(Avg("rating"))["rating__avg"] or 0
 
     def get_absolute_url(self) -> str:
         """Get URL for user's detail view.
