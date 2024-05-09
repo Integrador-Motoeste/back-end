@@ -34,7 +34,7 @@ class User(AbstractUser):
         decimal_places=2,
         default=0,
     )
-    number = models.CharField(verbose_name=_("Telefone"), max_length=15)
+    phone = models.CharField(verbose_name=_("Telefone"), max_length=15)
     picture = models.ImageField(upload_to="uploads", verbose_name="Imagem")
 
     def get_absolute_url(self) -> str:
@@ -61,3 +61,7 @@ class Pilot(models.Model):
     )
     cnh = models.IntegerField()
     status = models.IntegerField()
+
+    def __str__(self) -> str:
+        return self.user.username
+
