@@ -4,9 +4,14 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.response import Response
 from .serializers import RideSerializer
 from ..models import Ride
+from geopy.distance import geodesic
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, CreateModelMixin
+from rest_framework.permissions import IsAuthenticated
+from ...users.models import User, Pilot
+from ...users.api.serializers import UserSerializer, PilotSerializer
 
 class RideViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, CreateModelMixin, GenericViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Ride.objects.all()
     serializer_class = RideSerializer
 
@@ -37,3 +42,22 @@ class RideViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyM
         serializer = self.get_serializer(rides, many=True)
         return Response(serializer.data)
     
+class NearbyRidersViewSet(GenericViewSet):
+    queryset = Pilot.objects.all()
+
+    def list(self, request):
+        user = request.user
+        latitude = user.latitude
+        longitude = user.longitude
+        point = (latitude, longitude)
+
+        nearby_riders = []
+        for pilot in Pilot.objects.filter(status = 1):
+            print(pilot)
+            pilot_point = (pilot.user.latitude, pilot.user.longitude)
+            distance = geodesic(point, pilot_point).km
+            if distance <= 5:
+                nearby_riders.append(pilot)
+        
+        serializer = PilotSerializer(nearby_riders, many=True)
+        return Response(serializer.data)

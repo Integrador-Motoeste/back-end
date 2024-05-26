@@ -89,6 +89,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "drf_spectacular",
     "django_cpf_cnpj",
+    "rest_framework_simplejwt",
 ]
 
 LOCAL_APPS = [
@@ -111,6 +112,7 @@ MIGRATION_MODULES = {"sites": "ride_app_back.contrib.sites.migrations"}
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#authentication-backends
 AUTHENTICATION_BACKENDS = [
+    "rest_framework_simplejwt.authentication.JWTAuthentication",
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
@@ -297,6 +299,7 @@ SOCIALACCOUNT_FORMS = {"signup": "ride_app_back.users.forms.UserSocialSignupForm
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ),
