@@ -21,3 +21,6 @@ class Motorcycle(models.Model):
     plate = models.CharField(max_length=10, verbose_name="Placa")
     crlv = models.CharField(max_length=20)
     picture_moto = models.ImageField(upload_to="uploads", verbose_name="Imagem")
+
+    def __str__(self) -> str:
+        return self.model

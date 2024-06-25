@@ -36,8 +36,10 @@ class User(AbstractUser):
         decimal_places=2,
         default=0,
     )
-    number = models.CharField(verbose_name=_("Telefone"), max_length=15)
+    phone = models.CharField(verbose_name=_("Telefone"), max_length=15)
     picture = models.ImageField(upload_to="uploads", verbose_name="Imagem")
+    latitude = models.FloatField(verbose_name=(_("Latitude")), blank=True, null=True)
+    longitude = models.FloatField(verbose_name=(_("Longitude")), blank=True, null=True)
 
     @property
     def average_rating(self) -> float:
@@ -59,6 +61,12 @@ class User(AbstractUser):
     REQUIRED_FIELDS = ["username"]
 
 
+class PilortStatus(models.IntegerChoices):
+    Inative = 0, _("Inativo")
+    Active = 1, _("Ativo")
+    Busy = 2, _("Ocupado")
+
+
 class Pilot(models.Model):
     class Meta:
         ordering = ["user__name"]
@@ -72,4 +80,9 @@ class Pilot(models.Model):
         on_delete=models.CASCADE,
     )
     cnh = models.IntegerField()
-    status = models.IntegerField()
+    status = models.IntegerField(
+        choices=PilortStatus.choices, default=PilortStatus.Active
+    )
+
+    def __str__(self) -> str:
+        return self.user.username

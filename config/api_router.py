@@ -13,6 +13,8 @@ router.register("users", UserViewSet)
 router.register("pilots", PilotViewSet)
 router.register("ratings", RatingViewSet)
 router.register("motorcycle", MotorcycleViewSet)
+router.register("rides", RideViewSet)
+router.register("nearbyriders", NearbyRidersViewSet, basename="nearbyriders")
 
 app_name = "api"
 urlpatterns = router.urls

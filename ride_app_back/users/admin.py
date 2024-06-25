@@ -6,8 +6,8 @@ from django.utils.translation import gettext_lazy as _
 
 from .forms import UserAdminChangeForm
 from .forms import UserAdminCreationForm
-from .models import Pilot
-from .models import User
+from .models import Pilot, User
+from ..motorcycles.models import Motorcycle
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
     # Force the `admin` sign in process to go through the `django-allauth` workflow:
@@ -17,8 +17,8 @@ if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
 
 @admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):
-    form = UserAdminChangeForm
-    add_form = UserAdminCreationForm
+    # form = UserAdminChangeForm
+    # add_form = UserAdminCreationForm
     fieldsets = (
         (None, {"fields": ("username", "password")}),
         (_("Personal info"), {"fields": ("name", "email")}),
@@ -35,9 +35,19 @@ class UserAdmin(auth_admin.UserAdmin):
             },
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+        (_("Atributos do usuário"), {"fields": ("cpf", "birthday", "balance", "phone", "picture", "latitude", "longitude")}),
     )
     list_display = ["username", "name", "is_superuser"]
     search_fields = ["name"]
 
+class MotocycleInline(admin.TabularInline):
+    model = Motorcycle
+    extra = 1
 
-admin.site.register(Pilot)
+@admin.register(Pilot)
+class PilotAdmin(admin.ModelAdmin):
+    list_display = ["user", "cnh"]
+    search_fields = ["user__name"]
+    list_filter = ["user__name"]
+    inlines = [MotocycleInline]
+
