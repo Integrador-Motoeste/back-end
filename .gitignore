@@ -278,3 +278,4 @@ ride_app_back/media/
 
 #CUSTOM
 migrations/
+.env
