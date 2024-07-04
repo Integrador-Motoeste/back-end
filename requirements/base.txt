@@ -23,3 +23,4 @@ drf-spectacular==0.27.1  # https://github.com/tfranzel/drf-spectacular
 #CUSTOM
 django-simple-history==3.5.0
 django-cpf-cnpj==1.0.0
+djangorestframework-simplejwt==5.3.1
