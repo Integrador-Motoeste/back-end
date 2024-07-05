@@ -91,6 +91,7 @@ THIRD_PARTY_APPS = [
     "django_cpf_cnpj",
     "allauth.socialaccount.providers.google",
     "rest_framework_simplejwt",
+    "simple_history",
 ]
 
 LOCAL_APPS = [
@@ -99,7 +100,7 @@ LOCAL_APPS = [
     "ride_app_back.motorcycles",
     "ride_app_back.ratings",
     "ride_app_back.rides",
-    "simple_history",
+    "ride_app_back.transactions",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
