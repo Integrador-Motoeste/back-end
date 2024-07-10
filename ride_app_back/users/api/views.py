@@ -1,17 +1,18 @@
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from .serializers import UserSerializer, PilotSerializer
-from ride_app_back.users.models import User, Pilot
+from rest_framework.viewsets import ModelViewSet
+
+from ride_app_back.users.models import Pilot
+from ride_app_back.users.models import User
+
+from .serializers import PilotSerializer
+from .serializers import UserSerializer
+
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    lookup_field = "username"
-
-    def get_queryset(self, *args, **kwargs):
-        return self.queryset.filter(id=self.request.user.id)
 
     @action(detail=False)
     def me(self, request):
@@ -25,4 +26,3 @@ class PilotViewSet(ModelViewSet):
 
     def get_queryset(self, *args, **kwargs):
         return self.queryset.filter(user=self.request.user)
-    
