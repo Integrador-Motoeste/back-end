@@ -4,9 +4,12 @@ from rest_framework.routers import SimpleRouter
 
 from ride_app_back.motorcycles.api.viewsets import MotorcycleViewSet
 from ride_app_back.ratings.api.viewsets import RatingViewSet
+from ride_app_back.rides.api.views import NearbyRidersViewSet
+from ride_app_back.rides.api.views import RideViewSet
+from ride_app_back.transactions.api.views import InvoiceViewSet
+from ride_app_back.transactions.api.views import TransactionViewSet
 from ride_app_back.users.api.views import PilotViewSet
 from ride_app_back.users.api.views import UserViewSet
-from ride_app_back.rides.api.views import RideViewSet, NearbyRidersViewSet
 
 router = DefaultRouter() if settings.DEBUG else SimpleRouter()
 
@@ -15,6 +18,8 @@ router.register("pilots", PilotViewSet)
 router.register("ratings", RatingViewSet)
 router.register("motorcycle", MotorcycleViewSet)
 router.register("rides", RideViewSet)
+router.register("invoices", InvoiceViewSet)
+router.register("transactions", TransactionViewSet)
 router.register("nearbyriders", NearbyRidersViewSet, basename="nearbyriders")
 
 app_name = "api"
