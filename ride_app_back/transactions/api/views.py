@@ -7,14 +7,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-
+from rest_framework.decorators import action
 from ride_app_back.transactions.models import Invoice
-from ride_app_back.transactions.models import Transaction
 
 from ..asaas import AssasPaymentClient
 from .serializers import CreateInvoiceSerializer
 from .serializers import InvoiceSerializer
-from .serializers import TransactionSerializer
 
 
 class InvoiceViewSet(ModelViewSet):
@@ -22,11 +20,6 @@ class InvoiceViewSet(ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
 
-
-class TransactionViewSet(ModelViewSet):
-    permission_classes = [IsAuthenticated]
-    queryset = Transaction.objects.all()
-    serializer_class = TransactionSerializer
 
 
 class InvoicesAPIView(APIView):
@@ -60,7 +53,7 @@ class InvoicesAPIView(APIView):
         data = {
             "customer": customer.get("id"),
             "billingType": invoice.payment_type,
-            "value": float(invoice.transaction.value),
+            "value": float(invoice.value),
             "dueDate": end_date_str,
             "description": "Chame seu mototaxi da maneira mais rápida!",
             "externalReference": str(invoice.id),
@@ -77,3 +70,25 @@ class InvoicesAPIView(APIView):
         invoice.link_payment = result.get("invoiceUrl", "")
         invoice.external_id = result.get("id", "")
         invoice.save()
+
+
+class QRCodeView(APIView):
+
+    @extend_schema(request=CreateInvoiceSerializer)
+    def post(self, request):
+        serializer = CreateInvoiceSerializer(data=request.data)
+        if serializer.is_valid():
+            invoice_id = serializer.validated_data["id"]
+            invoice = Invoice.objects.get(id=invoice_id)
+
+            client = AssasPaymentClient()
+            response = client.get_qr_code(invoice.external_id)
+
+            if response:
+                return Response(response, status=status.HTTP_200_OK)
+            else:
+                return Response(
+                    {"error": "Erro ao gerar QR Code"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

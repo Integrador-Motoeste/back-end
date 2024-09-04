@@ -1,6 +1,6 @@
 from django.db import models
 
-from ..users.models import Pilot
+from ..users.models import User
 
 # Create your models here.
 
@@ -12,7 +12,7 @@ class Motorcycle(models.Model):
         verbose_name_plural = "Motos"
 
     owner = models.ForeignKey(
-        Pilot, verbose_name="Proprietário", on_delete=models.CASCADE, related_name="motorcycles"
+        User, verbose_name="Proprietário", on_delete=models.CASCADE, related_name="motorcycles"
     )
     model = models.CharField(max_length=100, verbose_name="Modelo")
     brand = models.CharField(max_length=100, verbose_name="Marca")

@@ -1,11 +1,6 @@
 from django.urls import path
 
-from ride_app_back.transactions.api.views import InvoicesAPIView
+from ride_app_back.transactions.api.views import InvoicesAPIView, QRCodeView
 
-urlpatterns = [
-    path(
-        "create_invoice",
-        InvoicesAPIView.as_view(),
-        name="create_invoice",
-    ),
-]
+
+urlpatterns = []

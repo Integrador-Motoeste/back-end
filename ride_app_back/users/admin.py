@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .forms import UserAdminChangeForm
 from .forms import UserAdminCreationForm
-from .models import Pilot, User
+from .models import User
 from ..motorcycles.models import Motorcycle
 
 if settings.DJANGO_ADMIN_FORCE_ALLAUTH:
@@ -44,7 +44,6 @@ class MotocycleInline(admin.TabularInline):
     model = Motorcycle
     extra = 1
 
-@admin.register(Pilot)
 class PilotAdmin(admin.ModelAdmin):
     list_display = ["user", "cnh"]
     search_fields = ["user__name"]
