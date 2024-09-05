@@ -1,12 +1,10 @@
 from functools import partialmethod
 
 import requests
-from dotenv import load_dotenv
 from requests import HTTPError
 
 from .api.serializers import AsaasCustomerSerializer
 
-load_dotenv()
 
 
 ASAAS_ENDPOINT_URL = "https://sandbox.asaas.com/api/v3"
@@ -74,3 +72,6 @@ class AssasPaymentClient:
 
     def send_payment_request(self, data):
         return self._api_post("/payments", json=data)
+
+    def get_qr_code(self, id):
+        return self._api_get(f"/payments/{id}/pixQrCode")

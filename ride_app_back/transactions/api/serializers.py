@@ -1,19 +1,7 @@
 from rest_framework import serializers
 
 from ..models import Invoice
-from ..models import Transaction
 
-
-class TransactionSerializer(serializers.Serializer):
-    class Meta:
-        model = Transaction
-        fields = [
-            "value",
-            "time",
-            "user",
-            "pilot",
-            "ride",
-        ]
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
@@ -24,7 +12,11 @@ class InvoiceSerializer(serializers.ModelSerializer):
             "payment_type",
             "status",
             "link_payment",
-            "transaction",
+            "value",
+            "time",
+            "user",
+            "pilot",
+            "ride",
         ]
 
     external_id = serializers.CharField(read_only=True)

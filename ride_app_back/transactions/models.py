@@ -2,7 +2,6 @@ from django.db import models
 from django.utils.translation import gettext as _
 
 from ..rides.models import Ride
-from ..users.models import Pilot
 from ..users.models import User
 
 # Create your models here.
@@ -10,21 +9,6 @@ STATUS_GROUP_CHOICES = (
     ("pending", _("Aguardando pagamento")),
     ("completed", _("Pagamento concluído")),
 )
-
-
-class Transaction(models.Model):
-    value = models.DecimalField(verbose_name="Valor", max_digits=20, decimal_places=2)
-    time = models.DateTimeField(verbose_name="Data/Hora", auto_now=True)
-    status = models.CharField(
-        max_length=20,
-        choices=STATUS_GROUP_CHOICES,
-        null=False,
-        verbose_name=_("Status"),
-    )
-
-    class Meta:
-        verbose_name = "Transação"
-        verbose_name_plural = "Transações"
 
 
 class Invoice(models.Model):
@@ -68,7 +52,14 @@ class Invoice(models.Model):
         null=True,
         blank=True,
     )
-    transaction = models.OneToOneField(Transaction, on_delete=models.CASCADE)
+    value = models.DecimalField(verbose_name="Valor", max_digits=20, decimal_places=2)
+    time = models.DateTimeField(verbose_name="Data/Hora", auto_now=True)
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_GROUP_CHOICES,
+        null=False,
+        verbose_name=_("Status"),
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuário")
     ride = models.ForeignKey(Ride, on_delete=models.CASCADE, verbose_name="Corrida")
-    pilot = models.ForeignKey(Pilot, on_delete=models.CASCADE, verbose_name="Piloto")
+    pilot = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Piloto", related_name="pilot")

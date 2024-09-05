@@ -1,7 +1,7 @@
 from django.db import models
 from simple_history.models import HistoricalRecords
 from django.utils.translation import gettext_lazy as _
-from ..users.models import User, Pilot
+from ..users.models import User
 
 class Status(models.TextChoices):
 
@@ -25,7 +25,7 @@ class Ride(models.Model):
         verbose_name= _("Distância")
     )
     pilot = models.ForeignKey(
-        Pilot,
+        User,
         on_delete=models.PROTECT,
         verbose_name=_("Piloto"),
         null=True,
