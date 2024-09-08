@@ -37,10 +37,16 @@ class Ride(models.Model):
         verbose_name=_("Cliente"),
         related_name="rides"
     )
-    start = models.CharField(max_length=100, verbose_name=_("Começo Local"))
-    end = models.CharField(max_length=100, verbose_name=_("Chegada Local"))
+
+    start_lat = models.FloatField(verbose_name=_("Começo Latitude"))
+    start_lng = models.FloatField(verbose_name=_("Começo Longitude"))
+    end_lat = models.FloatField(verbose_name=_("Chegada Latitude"))
+    end_lng = models.FloatField(verbose_name=_("Chegada Longitude"))
+
+
     stopPlace = models.CharField(max_length=100, verbose_name=_("Local de Parada"), null=True, blank=True)
     status = models.CharField(choices=Status.choices, default=0, verbose_name=_("Status"))
     timeStart = models.DateTimeField(editable=False, auto_now_add=True, verbose_name=_("Início Tempo"),)
     timeEnd = models.DateTimeField(verbose_name=_("Fim Tempo"), null=True, blank=True)
+    duration = models.CharField(verbose_name=_("Duração Estimada"), null=True, blank=True)
     history = HistoricalRecords(verbose_name=_("Registro de Auditoria"))
