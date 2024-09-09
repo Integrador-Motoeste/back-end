@@ -8,13 +8,12 @@ from ride_app_back.ratings.api.viewsets import RatingViewSet
 from ride_app_back.rides.api.views import NearbyRidersViewSet
 from ride_app_back.rides.api.views import RideViewSet
 from ride_app_back.transactions.api.views import InvoiceViewSet
-from ride_app_back.users.api.views import UserViewSet
 from ride_app_back.transactions.api.views import InvoicesAPIView, QRCodeView
-from django.urls import path
+from django.urls import path, include
+
 
 router = DefaultRouter() if settings.DEBUG else SimpleRouter()
 
-router.register("users", UserViewSet)
 router.register("ratings", RatingViewSet)
 router.register("motorcycles", MotorcycleViewSet)
 router.register("rides", RideViewSet)
@@ -34,5 +33,6 @@ urlpatterns = router.urls + [
         QRCodeView.as_view(),
         name="get_qr_code",
     ),
-]
+    path('users/', include('ride_app_back.users.urls')),
+] 
 

@@ -21,7 +21,7 @@ class UserAdmin(auth_admin.UserAdmin):
     # add_form = UserAdminCreationForm
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {"fields": ("name", "email")}),
+        (_("Personal info"), {"fields": ("first_name", "email")}),
         (
             _("Permissions"),
             {
@@ -35,10 +35,14 @@ class UserAdmin(auth_admin.UserAdmin):
             },
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
-        (_("Atributos do usuário"), {"fields": ("cpf", "birthday", "balance", "phone", "picture", "latitude", "longitude")}),
+        (_("Atributos do usuário"), {"fields": ("cpf", "balance", "picture", "latitude", "longitude")}),
     )
-    list_display = ["username", "name", "is_superuser"]
-    search_fields = ["name"]
+    list_display = ["username", "first_name", "display_groups" ,"is_superuser"]
+    search_fields = ["first_name"]
+
+    def display_groups(self, obj):
+        return ", ".join([group.name for group in obj.groups.all()])
+    display_groups.short_description = 'Groups'
 
 class MotocycleInline(admin.TabularInline):
     model = Motorcycle
