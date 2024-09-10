@@ -7,7 +7,6 @@ class RideQueueConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         message_type = data.get('type')
-        print(data)
 
         if message_type == 'request_ride':
             await self.request_ride(data)
@@ -139,57 +138,54 @@ class RideExecutionConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
-
     async def disconnect(self, close_code):
         ride_id = self.scope['url_route']['kwargs']['ride_id']
 
         await self.channel_layer.group_discard(ride_id, self.channel_name)
 
-    
     async def receive(self, text_data):
         data = json.loads(text_data)
         message_type = data.get('type')
 
         if message_type == 'change_pilot_position':
             await self.change_pilot_position(data)
-        if message_type == 'change_client_position':
+        elif message_type == 'send_change_pilot_position':
             await self.send_change_pilot_position(data)
+        elif message_type == 'confirm_boarding':
+            await self.confirm_boarding(data)
 
     async def change_pilot_position(self, event):
         ride_id = event['ride_id']
         latitude = event['latitude']
         longitude = event['longitude']
 
-        self.channel_layer.group_send({
+        await self.channel_layer.group_send(
             str(ride_id),
             {
                 'type': 'send_change_pilot_position',
                 'latitude': latitude,
                 'longitude': longitude
             }
-        })
+        )
 
     async def send_change_pilot_position(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'change_pilot_position',
+            'type': 'pilot_position',
             'latitude': event['latitude'],
             'longitude': event['longitude']
         }))
 
     async def confirm_boarding(self, event):
         ride_id = event['ride_id']
-        response = event['response']
 
-        await self.channel_layer.group_send({
+        await self.channel_layer.group_send(
             str(ride_id),
             {
                 'type': 'send_confirm_boarding',
-                'response': response
             }
-        })
+        )
 
     async def send_confirm_boarding(self, event):
         await self.send(text_data=json.dumps({
             'type': 'confirm_boarding',
-            'response': event['response']
         }))

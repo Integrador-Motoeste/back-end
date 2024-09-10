@@ -330,6 +330,7 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Documentation of API endpoints of ride-app-back",
     "VERSION": "1.0.0",
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
+    'PATH_PREFIX': '/api',
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
