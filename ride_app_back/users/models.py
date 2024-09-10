@@ -23,7 +23,7 @@ class User(AbstractUser):
         verbose_name = "Usuário"
         verbose_name_plural = "Usuários"
 
-    # First and last name do not cover name patterns around the globe
+    id_clerk_user = models.CharField(max_length=255)
     email = models.EmailField(_("email address"), unique=True)
     first_name = models.CharField(_("Nome"), max_length=255)
     last_name = models.CharField(_("Sobrenome"), max_length=255)
@@ -37,7 +37,7 @@ class User(AbstractUser):
     picture = models.ImageField(upload_to="uploads", verbose_name="Imagem")
     latitude = models.FloatField(verbose_name=(_("Latitude")), blank=True, null=True)
     longitude = models.FloatField(verbose_name=(_("Longitude")), blank=True, null=True)
-    cnh = models.IntegerField(verbose_name="CNH", blank=True, null=True)
+    cnh = models.CharField(verbose_name="CNH", blank=True)
     status = models.IntegerField(
         choices=PilotStatus.choices, default=PilotStatus.Active, blank=True, null=True
     )
