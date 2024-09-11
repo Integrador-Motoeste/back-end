@@ -15,6 +15,26 @@ class RideViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyM
     queryset = Ride.objects.all()
     serializer_class = RideSerializer
 
+    @action(detail=False, methods=['get'])
+    def rides_by_passenger(self, request):
+        passenger_id = request.query_params.get('passenger_id')
+        if not passenger_id:
+            return Response({"error": "passenger_id parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        rides = Ride.objects.filter(client_id=passenger_id)
+        serializer = self.get_serializer(rides, many=True)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def active_rides_by_passenger(self, request):
+        passenger_id = request.query_params.get('passenger_id')
+        if not passenger_id:
+            return Response({"error": "passenger_id parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        rides = Ride.objects.filter(client_id=passenger_id, status=1)
+        serializer = self.get_serializer(rides, many=True)
+        return Response(serializer.data)
+
     @action(detail=True, methods=['get'])
     def start(self, request, pk=None):
         ride = self.get_object()

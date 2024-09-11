@@ -1,9 +1,11 @@
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import AccessToken
-
+from ride_app_back.motorcycles.models import Motorcycle
+from ride_app_back.motorcycles.api.serializers import MotorcycleSerializer
 from django.views.decorators.csrf import csrf_exempt
 
 from ride_app_back.users.models import User
@@ -78,3 +80,27 @@ class UserViewSet(ModelViewSet):
 
         response = requests.post(url, json=data, headers=headers)
 
+
+class PilotView(GenericViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=['get'])
+    def get_pilot_info(self, request):
+        id = request.query_params.get('id')
+        if not id:
+            return Response({"error": "id parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = User.objects.get(id=id)
+        user_data = self.get_serializer(user).data
+
+        motorcycle = User.motorcycles.all().first()
+        motorcycle_data = MotorcycleSerializer(motorcycle).data
+
+        response = {
+            "user": user_data,
+            "motorcycle": motorcycle_data
+        }
+
+        return Response(response, status=status.HTTP_200_OK)

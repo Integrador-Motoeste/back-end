@@ -9,6 +9,7 @@ from ride_app_back.rides.api.views import NearbyRidersViewSet
 from ride_app_back.rides.api.views import RideViewSet
 from ride_app_back.transactions.api.views import InvoiceViewSet
 from ride_app_back.transactions.api.views import InvoicesAPIView, QRCodeView
+from ride_app_back.users.api.views import UserViewSet, PilotView
 from django.urls import path, include
 
 
