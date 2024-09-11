@@ -58,13 +58,6 @@ class User(AbstractUser):
     def __str__(self) -> str:
         return self.username
 
-    def save(self, *args, **kwargs):
-        if self.email and not self.username:
-            self.username = self.email
-        if self.username and not self.email:
-            self.email = self.username
-        super().save(*args, **kwargs)
-
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username", "first_name", "last_name"]

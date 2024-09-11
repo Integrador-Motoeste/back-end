@@ -51,6 +51,9 @@ class UserViewSet(ModelViewSet):
         else:
             try:
                 user = User.objects.get(email=email)
+                user.first_name = first_name
+                user.last_name = last_name
+                user.id_clerk_user = id_clerk_user
                 user.save()
                 created = False
 
