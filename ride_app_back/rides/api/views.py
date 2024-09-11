@@ -52,7 +52,7 @@ class NearbyRidersViewSet(GenericViewSet):
         point = (latitude, longitude)
 
         nearby_riders = []
-        for pilot in User.objects.filter(status = 1):
+        for pilot in User.objects.filter(status = 1, groups__name = 'Pilots'):
             pilot_point = (pilot.latitude, pilot.longitude)
             distance = geodesic(point, pilot_point).km
             if distance <= 5:
