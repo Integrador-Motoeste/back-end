@@ -37,24 +37,26 @@ class UserViewSet(ModelViewSet):
     
     @csrf_exempt
     @action(detail=False, methods=['post'])
-    def create_or_update_user(self, request):
+    def create_user(self, request):
         email = request.data.get('email')
         first_name = request.data.get('first_name')
         last_name = request.data.get("last_name")
         id_clerk_user = request.data.get("id_clerk_user")
         
-
-        try:
-            user = User.objects.get(email=email)
-            user.first_name = first_name
-            user.last_name = last_name
-            user.id_clerk_user = id_clerk_user
-            user.save()
-            created = False
-            
-        except User.DoesNotExist:
-            user = User.objects.create(email=email, first_name=first_name, last_name=last_name, id_clerk_user=id_clerk_user)
+        if request.data.get("password"):
+            password = request.data.get("password")
+            user = User.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name, id_clerk_user=id_clerk_user)
             created = True
+        
+        else:
+            try:
+                user = User.objects.get(email=email)
+                user.save()
+                created = False
+
+            except User.DoesNotExist:
+                user = User.objects.create(email=email, first_name=first_name, last_name=last_name, id_clerk_user=id_clerk_user)
+                created = True
 
         print("\nUser created or updated", user)
 
