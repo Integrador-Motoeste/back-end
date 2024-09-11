@@ -303,11 +303,12 @@ SOCIALACCOUNT_FORMS = {"signup": "ride_app_back.users.forms.UserSocialSignupForm
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        'users.authentication.ClerkAuthentication',
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
@@ -327,7 +328,8 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "ride-app-back API",
     "DESCRIPTION": "Documentation of API endpoints of ride-app-back",
     "VERSION": "1.0.0",
-    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
+    'SCHEMA_PATH_PREFIX': 'api/',
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
@@ -383,3 +385,4 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 ASAAS_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIwNTU3MTY3LCJpYXQiOjE3MjA1NTY4NjcsImp0aSI6ImRlMDI4MGFkYTc3NjQ1MmRhNzAyZDFjNDAwMmE1ODM1IiwidXNlcl9pZCI6MX0.cucSWkxREFDUhruPMuJAll28qT0vFdEp7YcQSrOipkw"
+CLERK_API_KEY = "sk_test_f5V6Rtrl7VOCdQilCeTphI9kBcRfTRefMzd00yiRI3"
