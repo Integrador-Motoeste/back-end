@@ -68,6 +68,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # APPS
 # ------------------------------------------------------------------------------
 DJANGO_APPS = [
+    "daphne",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -93,6 +94,7 @@ THIRD_PARTY_APPS = [
     "allauth.socialaccount.providers.google",
     "rest_framework_simplejwt",
     "simple_history",
+    "channels",
 ]
 
 LOCAL_APPS = [
