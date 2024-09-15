@@ -4,12 +4,16 @@ import requests
 from requests import HTTPError
 
 from .api.serializers import AsaasCustomerSerializer
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 
 
 ASAAS_ENDPOINT_URL = "https://sandbox.asaas.com/api/v3"
-ASAAS_ACCESS_TOKEN = "$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAwODQ1OTY6OiRhYWNoX2IwMGE4MTg2LWE5YzUtNDc1Mi04ZGUxLTYyYzYzZDk4Y2E2NA=="
-
+ASAAS_ACCESS_TOKEN = os.getenv('ASAAS_API_KEY')
 
 class AssasPaymentClient:
     error_msgs = {
