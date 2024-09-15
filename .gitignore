@@ -278,3 +278,8 @@ ride_app_back/media/
 
 #CUSTOM
 migrations/
+.env
+.envs/
+!.envs/.local/
+!.envs/.production.template/
+env
