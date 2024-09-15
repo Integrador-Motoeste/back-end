@@ -55,9 +55,6 @@ class RideQueueConsumer(AsyncWebsocketConsumer):
         self.scope['session']['user_id'] = user_id
         self.scope['session']['user_type'] = user_type
 
-        if user_type == 'pilot':
-            await self.channel_layer.group_add('pilots', self.channel_name)
-
         await self.channel_layer.group_add(user_id, self.channel_name)
 
         await self.accept()
@@ -68,11 +65,7 @@ class RideQueueConsumer(AsyncWebsocketConsumer):
         user_type = self.scope['session']['user_type']
         user_id = self.scope['session']['user_id']
 
-        if user_type == 'pilot':
-            self.pilots.remove(user_id)
-            await self.channel_layer.group_discard('pilots', self.channel_name)
-        else:
-            await self.channel_layer.group_discard(str(user_id), self.channel_name)
+        await self.channel_layer.group_discard(str(user_id), self.channel_name)
 
         print(f"{user_type} {user_id} desconectado")
 
@@ -206,15 +199,28 @@ class RideExecutionConsumer(AsyncWebsocketConsumer):
         ride_id = event['ride_id']
         latitude = event['latitude']
         longitude = event['longitude']
+        destination = event['destination']
 
-        await self.channel_layer.group_send(
-            str(ride_id),
-            {
-                'type': 'send_change_pilot_position',
-                'latitude': latitude,
-                'longitude': longitude
-            }
-        )
+        pilot_point = (latitude, longitude)
+        destination_point = (destination.get('lat'), destination.get('lng'))
+        distance = geodesic(destination_point, pilot_point).km
+        if distance <= 0.05:
+            print('chegou')
+            await self.channel_layer.group_send(
+                str(ride_id),
+                {
+                    'type': 'send_finish_ride',
+                }
+            )
+        else:
+            await self.channel_layer.group_send(
+                str(ride_id),
+                {
+                    'type': 'send_change_pilot_position',
+                    'latitude': latitude,
+                    'longitude': longitude
+                }
+            )
 
     async def send_change_pilot_position(self, event):
         await self.send(text_data=json.dumps({
@@ -237,17 +243,6 @@ class RideExecutionConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'confirm_boarding',
         }))
-
-
-    async def finish_ride(self, event):
-        ride_id = event['ride_id']
-
-        await self.channel_layer.group_send(
-            str(ride_id),
-            {
-                'type': 'send_finish_ride',
-            }
-        )
 
     async def send_finish_ride(self, event):
         await self.send(text_data=json.dumps({
