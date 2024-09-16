@@ -11,6 +11,8 @@ from ride_app_back.transactions.api.views import InvoiceViewSet
 from ride_app_back.transactions.api.views import InvoicesAPIView, QRCodeView
 from django.urls import path, include
 
+from ride_app_back.users.api.views import UserViewSet
+
 
 router = DefaultRouter() if settings.DEBUG else SimpleRouter()
 
@@ -20,6 +22,7 @@ router.register("rides", RideViewSet)
 router.register("invoices", InvoiceViewSet)
 router.register("notifications", NotificationViewSet)
 router.register("nearbyriders", NearbyRidersViewSet, basename="nearbyriders")
+router.register("users", UserViewSet)
 
 app_name = "api"
 urlpatterns = router.urls + [
@@ -32,7 +35,6 @@ urlpatterns = router.urls + [
         "transactions/get_qr_code",
         QRCodeView.as_view(),
         name="get_qr_code",
-    ),
-    path('users/', include('ride_app_back.users.urls')),
+    )
 ] 
 
