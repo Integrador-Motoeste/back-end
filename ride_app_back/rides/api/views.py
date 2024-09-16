@@ -10,10 +10,20 @@ from rest_framework.permissions import IsAuthenticated
 from ...users.models import User
 from ...users.api.serializers import UserSerializer
 
-class RideViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, CreateModelMixin, GenericViewSet):
+class RideViewSet(RetrieveModelMixin, CreateModelMixin, GenericViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Ride.objects.all()
     serializer_class = RideSerializer
+
+    def create(self, request, *args, **kwargs):
+        if request.user.groups.filter(name='Pilots').exists():
+            if request.user.pilot_rides.filter(status=1).exists():
+                return Response({"error": "Você já está em uma corrida"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            if request.user.rides.filter(status=1).exists():
+                return Response({"error": "Você já está em uma corrida"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return super().create(request, *args, **kwargs)
 
     @action(detail=True, methods=['get'])
     def start(self, request, pk=None):
