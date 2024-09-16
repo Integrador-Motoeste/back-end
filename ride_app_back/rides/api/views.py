@@ -42,6 +42,13 @@ class RideViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyM
         serializer = self.get_serializer(rides, many=True)
         return Response(serializer.data)
     
+    @action(detail=False, methods=['get'])
+    def get_active_ride(self, request):
+        rides = Ride.objects.filter(client=request.user, status=1).first()
+        serializer = self.get_serializer(rides)
+        return Response(serializer.data)
+
+    
 class NearbyRidersViewSet(GenericViewSet):
     queryset = User.objects.all()
 
