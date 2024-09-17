@@ -10,10 +10,20 @@ from rest_framework.permissions import IsAuthenticated
 from ...users.models import User
 from ...users.api.serializers import UserSerializer
 
-class RideViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin, CreateModelMixin, GenericViewSet):
+class RideViewSet(RetrieveModelMixin, CreateModelMixin, GenericViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Ride.objects.all()
     serializer_class = RideSerializer
+
+    def create(self, request, *args, **kwargs):
+        if request.user.groups.filter(name='Pilots').exists():
+            if request.user.pilot_rides.filter(status=1).exists():
+                return Response({"error": "Você já está em uma corrida"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            if request.user.rides.filter(status=1).exists():
+                return Response({"error": "Você já está em uma corrida"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return super().create(request, *args, **kwargs)
 
     @action(detail=True, methods=['get'])
     def start(self, request, pk=None):
@@ -41,6 +51,13 @@ class RideViewSet(ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyM
         rides = Ride.objects.filter(client=request.user)
         serializer = self.get_serializer(rides, many=True)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def get_active_ride(self, request):
+        rides = Ride.objects.filter(client=request.user, status=1).first()
+        serializer = self.get_serializer(rides)
+        return Response(serializer.data)
+
     
 class NearbyRidersViewSet(GenericViewSet):
     queryset = User.objects.all()

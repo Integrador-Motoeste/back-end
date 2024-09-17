@@ -3,7 +3,7 @@ from rest_framework import serializers
 from ..models import Motorcycle
 
 
-class MotorcycleSerializer(serializers.Serializer):
+class MotorcycleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Motorcycle
         fields = [
