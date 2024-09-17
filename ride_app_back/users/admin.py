@@ -35,7 +35,7 @@ class UserAdmin(auth_admin.UserAdmin):
             },
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
-        (_("Atributos do usuário"), {"fields": ("cpf", "balance", "picture", "latitude", "longitude")}),
+        (_("Atributos do usuário"), {"fields": ("cpf", "balance", "picture", "latitude", "longitude", "cnh", "status")}),
     )
     list_display = ["username", "first_name", "display_groups" ,"is_superuser"]
     search_fields = ["first_name"]
