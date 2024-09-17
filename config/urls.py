@@ -14,6 +14,8 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
 
+from ride_app_back.users.views import GoogleLogin
+
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path(
@@ -48,6 +50,7 @@ urlpatterns += [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('dj-rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
 ]
 
 if settings.DEBUG:
