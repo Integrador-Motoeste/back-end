@@ -8,6 +8,7 @@ from ..users.models import User
 STATUS_GROUP_CHOICES = (
     ("pending", _("Aguardando pagamento")),
     ("completed", _("Pagamento concluído")),
+    ("canceled", _("Pagamento Cancelado")),
 )
 
 
@@ -40,12 +41,6 @@ class Invoice(models.Model):
         choices=PAYMENT_METHODS_CHOICES,
         verbose_name=_("Tipo do pagamento"),
     )
-    status = models.CharField(
-        max_length=50,
-        choices=PAYMENT_STATUS_CHOICES,
-        default="PENDING",
-        verbose_name=_("Status"),
-    )
     link_payment = models.CharField(
         max_length=500,
         verbose_name=_("Link do pagamento"),
@@ -53,11 +48,12 @@ class Invoice(models.Model):
         blank=True,
     )
     value = models.DecimalField(verbose_name="Valor", max_digits=20, decimal_places=2)
-    time = models.DateTimeField(verbose_name="Data/Hora", auto_now=True)
+    time = models.DateTimeField(verbose_name="Data/Hora", auto_now_add=True)
     status = models.CharField(
         max_length=20,
         choices=STATUS_GROUP_CHOICES,
         null=False,
+        default="pending",
         verbose_name=_("Status"),
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Usuário")

@@ -9,7 +9,7 @@ from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateMode
 from rest_framework.permissions import IsAuthenticated
 from ...users.models import User
 from ...users.api.serializers import UserSerializer
-
+from django.db.models import Q
 class RideViewSet(RetrieveModelMixin, CreateModelMixin, GenericViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Ride.objects.all()
@@ -48,13 +48,16 @@ class RideViewSet(RetrieveModelMixin, CreateModelMixin, GenericViewSet):
     
     @action(detail=False, methods=['get'])
     def my_rides(self, request):
-        rides = Ride.objects.filter(client=request.user)
+        rides = Ride.objects.filter(passenger=request.user)
         serializer = self.get_serializer(rides, many=True)
         return Response(serializer.data)
     
     @action(detail=False, methods=['get'])
     def get_active_ride(self, request):
-        rides = Ride.objects.filter(client=request.user, status='started').first()
+        rides = Ride.objects.filter(
+            (Q(passenger=request.user) | Q(pilot=request.user)), 
+            status='started'
+        ).first()
         serializer = self.get_serializer(rides)
         if rides:
             return Response(serializer.data)

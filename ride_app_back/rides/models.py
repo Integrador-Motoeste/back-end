@@ -7,6 +7,7 @@ class Status(models.TextChoices):
 
     created = "created" , _("Criada")
     started = "started", _("Iniciada")
+    payment = "payment", _("Aguardando Pagamento")
     finished = "finished", _("Finalizada")
     canceled = "canceled", _("Cancelada")
 
@@ -49,3 +50,5 @@ class Ride(models.Model):
     timeEnd = models.DateTimeField(verbose_name=_("Fim Tempo"), null=True, blank=True)
     duration = models.CharField(verbose_name=_("Duração Estimada"), null=True, blank=True)
     history = HistoricalRecords(verbose_name=_("Registro de Auditoria"))
+
+    is_boarded = models.BooleanField(default=False, verbose_name=_("Embarcado"))

@@ -8,6 +8,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Invoice
         fields = [
+            "id",
             "external_id",
             "payment_type",
             "status",
