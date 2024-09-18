@@ -21,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer[User]):
                 raise serializers.ValidationError({field: "This field cannot be empty."})
         return data
 
+
 class CustomRegisterSerializer(RegisterSerializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
@@ -46,3 +47,10 @@ class CustomRegisterSerializer(RegisterSerializer):
         user.last_name = self.cleaned_data.get('last_name')
         user.save()
         return user
+    
+
+class TurnUserPilotSerializer(serializers.Serializer):
+
+    class Meta:
+        model = User
+        fields = ['id', 'cnh', 'status', 'motorcycles']
