@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from django.views.decorators.csrf import csrf_exempt
+from ride_app_back.motorcycles.api.serializers import MotorcycleSerializer
 
 from ride_app_back.users.models import User
 
@@ -47,3 +48,25 @@ class UserViewSet(ModelViewSet):
         print("usuario criado",user)
         serializer = UserSerializer(user)
         return Response(status=status.HTTP_200_OK, data=serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def get_pilot_info(self, request):
+        id = request.query_params.get('id')
+        if not id:
+            return Response({"error": "id parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.get(id=id)
+        if not user:
+            return Response({"error": "User not found"}, status=status.HTTP_204_NO_CONTENT)
+        
+        user_data = self.get_serializer(user).data
+        motorcycle = user.motorcycles.all().first()
+        motorcycle_data = MotorcycleSerializer(motorcycle).data
+
+
+        response = {
+            "user": user_data,
+            "motorcycle": motorcycle_data
+        }
+
+        return Response(response, status=status.HTTP_200_OK)

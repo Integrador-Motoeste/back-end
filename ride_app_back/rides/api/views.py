@@ -17,10 +17,10 @@ class RideViewSet(RetrieveModelMixin, CreateModelMixin, GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         if request.user.groups.filter(name='Pilots').exists():
-            if request.user.pilot_rides.filter(status=1).exists():
+            if request.user.pilot_rides.filter(status='started').exists():
                 return Response({"error": "Você já está em uma corrida"}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            if request.user.rides.filter(status=1).exists():
+            if request.user.rides.filter(status='started').exists():
                 return Response({"error": "Você já está em uma corrida"}, status=status.HTTP_400_BAD_REQUEST)
         
         return super().create(request, *args, **kwargs)
@@ -54,9 +54,12 @@ class RideViewSet(RetrieveModelMixin, CreateModelMixin, GenericViewSet):
     
     @action(detail=False, methods=['get'])
     def get_active_ride(self, request):
-        rides = Ride.objects.filter(client=request.user, status=1).first()
+        rides = Ride.objects.filter(client=request.user, status='started').first()
         serializer = self.get_serializer(rides)
-        return Response(serializer.data)
+        if rides:
+            return Response(serializer.data)
+        
+        return Response({"error": "Corrida não encontrada"}, status=status.HTTP_204_NO_CONTENT)
 
     
 class NearbyRidersViewSet(GenericViewSet):

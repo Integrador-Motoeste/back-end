@@ -16,3 +16,12 @@ class MotorcycleSerializer(serializers.ModelSerializer):
             "crlv",
             "picture_moto",
         ]
+
+
+    picture_moto = serializers.SerializerMethodField()
+
+
+    def get_picture_moto(self, obj):
+        if obj.picture_moto:
+            return obj.picture_moto.url
+        return None
