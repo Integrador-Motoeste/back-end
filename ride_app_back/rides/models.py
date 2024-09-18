@@ -26,7 +26,6 @@ class Ride(models.Model):
         User,
         on_delete=models.PROTECT,
         verbose_name=_("Piloto"),
-        null=True,
         related_name="pilot_rides"
     )
     passenger = models.ForeignKey(
