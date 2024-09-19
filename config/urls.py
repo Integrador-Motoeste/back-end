@@ -13,6 +13,8 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from ride_app_back.users.api.views import GoogleLogin
+
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -30,6 +32,7 @@ urlpatterns = [
     path("transactions/", include("transactions.urls")),
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+    path('dj-rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
 ]
 
 # API URLS
