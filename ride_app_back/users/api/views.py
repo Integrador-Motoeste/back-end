@@ -8,8 +8,10 @@ from ride_app_back.motorcycles.api.serializers import MotorcycleSerializer
 from ride_app_back.users.models import User
 
 from .serializers import UserSerializer
+from ride_app_back.motorcycles.api.serializers import MotorcycleSerializer
 
 from django.contrib.auth.models import Group
+from rest_framework import serializers
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
@@ -20,35 +22,33 @@ class UserViewSet(ModelViewSet):
     def me(self, request):
         serializer = UserSerializer(request.user, context={"request": request})
         return Response(status=status.HTTP_200_OK, data=serializer.data)
-    
-    @action(detail=False, methods=['get'])
-    def turn_user_pilot(self, request):
-        user = request.user
-        user.groups.remove(1)
-        group, created = Group.objects.get_or_create(name='Pilots')
-        user.groups.add(group)
-        user.save()
-        return Response(status=status.HTTP_200_OK)
-    
-    @csrf_exempt
+
     @action(detail=False, methods=['post'])
-    def create_or_update_user(self, request):
-        email = request.data.get('email')
-        first_name = request.data.get('first_name')
-        last_name = request.data.get("last_name")
+    def turn_user_pilot(self, request):
+        user_serializer = self.get_serializer(request.data['user'])
+        motorcycle_serializer = MotorcycleSerializer(data=request.data['motorcycle'])
 
-        user, created = User.objects.get_or_create(email=email, first_name=first_name, last_name=last_name)
-
-        if not created:
-            print("User already exists")
-            user.first_name = first_name
-            user.last_name = last_name
+        if user_serializer.is_valid() and motorcycle_serializer.is_valid():
+            user = request.user
+            user.groups.remove(1)
+            group, created = Group.objects.get_or_create(name='Pilots')
+            user.groups.add(group)
+            user.cpf = user_serializer.validated_data['cpf']
+            user.cnh = user_serializer.validated_data['cnh']
             user.save()
-            
-        print("usuario criado",user)
-        serializer = UserSerializer(user)
-        return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+            if motorcycle_serializer.is_valid():
+                motorcycle = motorcycle_serializer.save(owner=user)
+                return Response({
+                    "user": UserSerializer(user).data,
+                    "motorcycle": MotorcycleSerializer(motorcycle).data
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response(motorcycle_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
     @action(detail=False, methods=['get'])
     def get_pilot_info(self, request):
         id = request.query_params.get('id')

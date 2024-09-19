@@ -13,10 +13,8 @@ class MotorcycleSerializer(serializers.ModelSerializer):
             "color",
             "year",
             "plate",
-            "crlv",
             "picture_moto",
         ]
-
 
     picture_moto = serializers.SerializerMethodField()
 
