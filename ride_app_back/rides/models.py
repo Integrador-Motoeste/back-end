@@ -7,6 +7,7 @@ class Status(models.TextChoices):
 
     created = "created" , _("Criada")
     started = "started", _("Iniciada")
+    payment = "payment", _("Aguardando Pagamento")
     finished = "finished", _("Finalizada")
     canceled = "canceled", _("Cancelada")
 
@@ -16,9 +17,6 @@ class Ride(models.Model):
         verbose_name = _("Corrida")
         verbose_name_plural = _("Corridas")
 
-    value = models.DecimalField(max_digits=6, decimal_places=2, 
-        verbose_name="Valor"
-        )
     distance = models.DecimalField(
         max_digits=10,
         decimal_places=2,
@@ -28,13 +26,12 @@ class Ride(models.Model):
         User,
         on_delete=models.PROTECT,
         verbose_name=_("Piloto"),
-        null=True,
         related_name="pilot_rides"
     )
-    client = models.ForeignKey(
+    passenger = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
-        verbose_name=_("Cliente"),
+        verbose_name=_("Passageiro"),
         related_name="rides"
     )
 
@@ -43,6 +40,8 @@ class Ride(models.Model):
     end_lat = models.FloatField(verbose_name=_("Chegada Latitude"))
     end_lng = models.FloatField(verbose_name=_("Chegada Longitude"))
 
+    origin = models.CharField(max_length=100, verbose_name=_("Origem"), null=True, blank=True)
+    destination = models.CharField(max_length=100, verbose_name=_("Destino"), null=True, blank=True)
 
     stopPlace = models.CharField(max_length=100, verbose_name=_("Local de Parada"), null=True, blank=True)
     status = models.CharField(choices=Status.choices, default=0, verbose_name=_("Status"))
@@ -50,3 +49,5 @@ class Ride(models.Model):
     timeEnd = models.DateTimeField(verbose_name=_("Fim Tempo"), null=True, blank=True)
     duration = models.CharField(verbose_name=_("Duração Estimada"), null=True, blank=True)
     history = HistoricalRecords(verbose_name=_("Registro de Auditoria"))
+
+    is_boarded = models.BooleanField(default=False, verbose_name=_("Embarcado"))

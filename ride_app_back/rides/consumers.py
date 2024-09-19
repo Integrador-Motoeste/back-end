@@ -1,6 +1,10 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from geopy.distance import geodesic
+from .models import Ride
+from ride_app_back.transactions.models import Invoice
+from channels.db import database_sync_to_async
+
 class RideQueueConsumer(AsyncWebsocketConsumer):
     pilots = {} 
     passengers = {}
@@ -147,6 +151,12 @@ class RideQueueConsumer(AsyncWebsocketConsumer):
         response = event['response']
         ride_id = event['ride_id']
 
+        if not response and 'cancel_type' in event:
+            ride = await database_sync_to_async(Ride.objects.get)(id=ride_id)
+            ride.status = "canceled"
+            await database_sync_to_async(ride.save)()
+
+
         await self.channel_layer.group_send(
             str(pilot_id),
             {
@@ -205,7 +215,9 @@ class RideExecutionConsumer(AsyncWebsocketConsumer):
         destination_point = (destination.get('lat'), destination.get('lng'))
         distance = geodesic(destination_point, pilot_point).km
         if distance <= 0.05:
-            print('chegou')
+            ride = await database_sync_to_async(Ride.objects.get)(id=ride_id)
+            ride.status = 'payment'
+            await database_sync_to_async(ride.save)()
             await self.channel_layer.group_send(
                 str(ride_id),
                 {
@@ -231,6 +243,9 @@ class RideExecutionConsumer(AsyncWebsocketConsumer):
 
     async def confirm_boarding(self, event):
         ride_id = event['ride_id']
+        ride = await database_sync_to_async(Ride.objects.get)(id=ride_id)
+        ride.is_boarded = True
+        await database_sync_to_async(ride.save)()
 
         await self.channel_layer.group_send(
             str(ride_id),
@@ -256,7 +271,6 @@ class PaymentConsumer(AsyncWebsocketConsumer):
         ride_id = self.scope['url_route']['kwargs']['ride_id']
 
         await self.channel_layer.group_add(ride_id, self.channel_name)
-
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -267,6 +281,7 @@ class PaymentConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         message_type = data.get('type')
+        print(message_type, data)
 
         if message_type == 'confirmation':
             await self.confirmation(data)
@@ -276,6 +291,16 @@ class PaymentConsumer(AsyncWebsocketConsumer):
 
     async def confirmation(self, event):
         ride_id = event['ride_id']
+
+        ride = await database_sync_to_async(Ride.objects.get)(id=ride_id)
+        invoice = await database_sync_to_async(Invoice.objects.get)(ride=ride)
+
+        ride.status = 'finished'
+        invoice.status = 'completed'
+
+        await database_sync_to_async(ride.save)()
+        await database_sync_to_async(invoice.save)()
+
 
         await self.channel_layer.group_send(
             str(ride_id),

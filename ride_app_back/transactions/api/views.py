@@ -13,12 +13,28 @@ from ride_app_back.transactions.models import Invoice
 from ..asaas import AssasPaymentClient
 from .serializers import CreateInvoiceSerializer
 from .serializers import InvoiceSerializer
-
+from django.db.models import Q
 
 class InvoiceViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
+
+    @action(detail=False, methods=['get'])
+    def get_invoice_by_ride_id(self, request):
+        id = request.query_params.get('id')
+
+        if not id:
+            return Response({"error": "id parameter is required"}, status=status.HTTP_400_BAD_REQUEST)
+        invoice = Invoice.objects.filter(
+            ride=id,
+        ).first()
+
+        serializer = self.get_serializer(invoice)
+        if invoice:
+            return Response(serializer.data)
+        
+        return Response({"error": "Corrida não encontrada"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
