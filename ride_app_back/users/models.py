@@ -43,6 +43,8 @@ class User(AbstractUser, PermissionsMixin):
     )
     username = models.CharField(max_length=255, unique=True, blank=True)
 
+    pix_key = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Chave Pix"))
+
     def average_rating(self) -> float:
         return self.Ratings.objects.all().aggregate(Avg("rating"))["rating__avg"] or 0
 

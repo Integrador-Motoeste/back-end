@@ -8,7 +8,7 @@ from ride_app_back.ratings.api.viewsets import RatingViewSet
 from ride_app_back.rides.api.views import NearbyRidersViewSet
 from ride_app_back.rides.api.views import RideViewSet
 from ride_app_back.transactions.api.views import InvoiceViewSet
-from ride_app_back.transactions.api.views import InvoicesAPIView, QRCodeView
+from ride_app_back.transactions.api.views import InvoicesAPIView, QRCodeView, PaymentWebHookview
 from django.urls import path, include
 
 from ride_app_back.users.api.views import UserViewSet
@@ -35,6 +35,11 @@ urlpatterns = router.urls + [
         "transactions/get_qr_code",
         QRCodeView.as_view(),
         name="get_qr_code",
+    ),
+    path(
+        "transactions/payment_webhook",
+        PaymentWebHookview.as_view(),
+        name="payment_webhook",
     )
 ] 
 

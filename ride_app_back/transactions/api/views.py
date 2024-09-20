@@ -1,6 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
-
+import json
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -108,3 +108,15 @@ class QRCodeView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+#Only work with public IP
+class PaymentWebHookview(APIView):
+
+    def post(self, request):
+        data = json.loads(request.body)
+        print(data)
+        if data:
+            return Response(status=status.HTTP_200_OK)
+        
+        return Response(status=status.HTTP_400_BAD_REQUEST)
