@@ -100,7 +100,8 @@ class WithdrawView(APIView):
             value = serializer.validated_data["value"]
             pilot = User.objects.get(id=request.user.id)
 
-            if pilot.groups.filter(name="pilot").exists() == False:
+            if pilot.groups.filter(name="Pilots").exists() == False:
+                print('aqui')
                 return Response(
                     {"error": "Usuário não é um piloto"},
                     status=status.HTTP_400_BAD_REQUEST,
