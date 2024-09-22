@@ -35,15 +35,11 @@ class User(AbstractUser, PermissionsMixin):
         default=0,
     )
     picture = models.ImageField(upload_to="uploads", verbose_name="Imagem", blank=True)
-    latitude = models.FloatField(verbose_name=(_("Latitude")), blank=True, null=True)
-    longitude = models.FloatField(verbose_name=(_("Longitude")), blank=True, null=True)
     cnh = models.CharField(verbose_name="CNH", blank=True, null=True)
     status = models.CharField(
         choices=PilotStatus.choices, default=PilotStatus.Active, blank=True, null=True
     )
     username = models.CharField(max_length=255, unique=True, blank=True)
-
-    pix_key = models.CharField(max_length=255, blank=True, null=True, verbose_name=_("Chave Pix"))
 
     def average_rating(self) -> float:
         return self.Ratings.objects.all().aggregate(Avg("rating"))["rating__avg"] or 0
