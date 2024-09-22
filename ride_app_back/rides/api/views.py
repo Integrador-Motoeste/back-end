@@ -48,7 +48,7 @@ class RideViewSet(RetrieveModelMixin, CreateModelMixin, GenericViewSet):
     
     @action(detail=False, methods=['get'])
     def my_rides(self, request):
-        rides = Ride.objects.filter(passenger=request.user)
+        rides = Ride.objects.filter((Q(passenger=request.user) | Q(pilot=request.user)))
         serializer = self.get_serializer(rides, many=True)
         return Response(serializer.data)
     
