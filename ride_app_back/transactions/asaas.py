@@ -79,3 +79,6 @@ class AssasPaymentClient:
 
     def get_qr_code(self, id):
         return self._api_get(f"/payments/{id}/pixQrCode")
+    
+    def send_withdraw_request(self, data):
+        return self._api_post("/transfers", json=data)

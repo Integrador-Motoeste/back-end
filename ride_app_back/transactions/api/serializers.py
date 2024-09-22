@@ -33,6 +33,10 @@ class CreateInvoiceSerializer(serializers.Serializer):
         except Invoice.DoesNotExist:
             raise serializers.ValidationError("Pagamento não encontrado.")
         return invoice
+    
+class WithDrawSerializer(serializers.Serializer):
+    value = serializers.FloatField()
+
 
 
 class CPFField(serializers.Field):
