@@ -25,12 +25,14 @@ class CustomRegisterSerializer(RegisterSerializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
     email = serializers.EmailField(required=False)
+    cpf = serializers.CharField(required=True)
 
     def get_cleaned_data(self):
         data = super().get_cleaned_data()
         data['first_name'] = self.validated_data.get('first_name', '')
         data['last_name'] = self.validated_data.get('last_name', '')
         data['email'] = self.validated_data.get('email', '')
+        data['cpf'] = self.validated_data.get('cpf', '')
         return data
 
     def validate_email(self, email):
@@ -44,5 +46,6 @@ class CustomRegisterSerializer(RegisterSerializer):
         setup_user_email(request, user, [])
         user.first_name = self.cleaned_data.get('first_name')
         user.last_name = self.cleaned_data.get('last_name')
+        user.cpf = self.cleaned_data.get('cpf')
         user.save()
         return user
