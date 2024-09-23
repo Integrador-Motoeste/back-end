@@ -5,6 +5,10 @@ from ..models import Invoice
 
 
 class InvoiceSerializer(serializers.ModelSerializer):
+    pilot_id = serializers.IntegerField(source='pilot.id', read_only=True)
+    client_id = serializers.IntegerField(source='user.id', read_only=True)
+
+
     class Meta:
         model = Invoice
         fields = [
@@ -18,6 +22,8 @@ class InvoiceSerializer(serializers.ModelSerializer):
             "user",
             "pilot",
             "ride",
+            "pilot_id",
+            "client_id",
         ]
 
     external_id = serializers.CharField(read_only=True)
