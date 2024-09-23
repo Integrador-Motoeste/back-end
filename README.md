@@ -58,4 +58,4 @@ Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
 8. Rode o servidor
    ```bash
-   python manage.py runserver
+   python manage.py runserver 0.0.0.0:8000
