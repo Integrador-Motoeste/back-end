@@ -16,8 +16,7 @@ class MotorcycleSerializer(serializers.ModelSerializer):
             "picture_moto",
         ]
 
-    picture_moto = serializers.SerializerMethodField()
-
+    picture_moto = serializers.ImageField()
 
     def get_picture_moto(self, obj):
         if obj.picture_moto:

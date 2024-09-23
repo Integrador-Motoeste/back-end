@@ -1,5 +1,6 @@
 from allauth.account.forms import SignupForm
 from allauth.socialaccount.forms import SignupForm as SocialSignupForm
+from django import forms
 from django.contrib.auth import forms as admin_forms
 from django.utils.translation import gettext_lazy as _
 
@@ -38,3 +39,18 @@ class UserSocialSignupForm(SocialSignupForm):
     Default fields will be added automatically.
     See UserSignupForm otherwise.
     """
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'cpf', 'picture', 'cnh', 'status', 'balance', 'groups']
+        widgets = {
+            'groups': forms.CheckboxSelectMultiple(),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        for field, value in cleaned_data.items():
+            if value is None or value == '':
+                raise forms.ValidationError({field: "This field cannot be empty."})
+        return cleaned_data

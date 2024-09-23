@@ -11,8 +11,10 @@ from ride_app_back.transactions.api.views import InvoiceViewSet
 from ride_app_back.transactions.api.views import InvoicesAPIView, QRCodeView
 from django.urls import path, include
 
-from ride_app_back.users.api.views import UserViewSet
+from ride_app_back.users.api.views import UserViewSet, TurnPilot
 
+from django.conf import settings
+from django.conf.urls.static import static
 
 router = DefaultRouter() if settings.DEBUG else SimpleRouter()
 
@@ -22,7 +24,8 @@ router.register("rides", RideViewSet)
 router.register("invoices", InvoiceViewSet)
 router.register("notifications", NotificationViewSet)
 router.register("nearbyriders", NearbyRidersViewSet, basename="nearbyriders")
-router.register("users", UserViewSet)
+router.register("users", UserViewSet, basename="users")
+router.register("turn_pilot", TurnPilot, basename="turn_pilot")  
 
 app_name = "api"
 urlpatterns = router.urls + [
@@ -38,3 +41,4 @@ urlpatterns = router.urls + [
     )
 ] 
 
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
