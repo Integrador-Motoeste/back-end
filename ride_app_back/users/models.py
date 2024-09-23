@@ -35,8 +35,6 @@ class User(AbstractUser, PermissionsMixin):
         default=0,
     )
     picture = models.ImageField(upload_to="uploads", verbose_name="Imagem", blank=True)
-    latitude = models.FloatField(verbose_name=(_("Latitude")), blank=True, null=True)
-    longitude = models.FloatField(verbose_name=(_("Longitude")), blank=True, null=True)
     cnh = models.CharField(verbose_name="CNH", blank=True, null=True)
     status = models.CharField(
         choices=PilotStatus.choices, default=PilotStatus.Active, blank=True, null=True

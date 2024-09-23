@@ -1,6 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
-
+import json
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
@@ -11,9 +11,10 @@ from rest_framework.decorators import action
 from ride_app_back.transactions.models import Invoice
 
 from ..asaas import AssasPaymentClient
-from .serializers import CreateInvoiceSerializer
+from .serializers import CreateInvoiceSerializer, WithDrawSerializer
 from .serializers import InvoiceSerializer
 from django.db.models import Q
+from ride_app_back.users.models import User
 
 class InvoiceViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -88,6 +89,59 @@ class InvoicesAPIView(APIView):
         invoice.save()
 
 
+
+class WithdrawView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(request=WithDrawSerializer)
+    def post(self, request):
+        serializer = WithDrawSerializer(data=request.data)
+        if serializer.is_valid():
+            value = serializer.validated_data["value"]
+            pilot = User.objects.get(id=request.user.id)
+
+            if pilot.groups.filter(name="Pilots").exists() == False:
+                return Response(
+                    {"error": "Usuário não é um piloto"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            if pilot.balance < value:
+                return Response(
+                    {"error": "Saldo insuficiente para saque"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            
+            data = self.prepare_payment_data(pilot, value)
+            response = self.send_payment_request(data)
+
+            if response:
+                pilot.balance = float(pilot.balance) - value
+                pilot.save()
+                return Response(response, status=status.HTTP_200_OK)
+
+
+        return Response(
+            {"error": "Erro ao enviar solicitação de pagamento"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    def prepare_payment_data(self, pilot, value):
+        data = {
+            "value" : value,
+            "pixAddressKey" : str(pilot.cpf),
+            "pixAddressKeyType" : "CPF",
+            "scheduleDate": None,
+            "description": "Pagamento de corrida",
+        }
+        return data
+
+    def send_payment_request(self, data):
+        client = AssasPaymentClient()
+        response = client.send_withdraw_request(data)
+        return response
+
+
 class QRCodeView(APIView):
 
     @extend_schema(request=CreateInvoiceSerializer)
@@ -108,3 +162,15 @@ class QRCodeView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+#Only work with public IP
+class PaymentWebHookview(APIView):
+
+    def post(self, request):
+        data = json.loads(request.body)
+        print(data)
+        if data:
+            return Response(status=status.HTTP_200_OK)
+        
+        return Response(status=status.HTTP_400_BAD_REQUEST)

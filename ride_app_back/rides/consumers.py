@@ -2,8 +2,10 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from geopy.distance import geodesic
 from .models import Ride
+from ride_app_back.users.models import User
 from ride_app_back.transactions.models import Invoice
 from channels.db import database_sync_to_async
+from django.http import JsonResponse
 
 class RideQueueConsumer(AsyncWebsocketConsumer):
     pilots = {} 
@@ -211,10 +213,12 @@ class RideExecutionConsumer(AsyncWebsocketConsumer):
         longitude = event['longitude']
         destination = event['destination']
 
+        ride = await database_sync_to_async(Ride.objects.get)(id=ride_id)
+
         pilot_point = (latitude, longitude)
         destination_point = (destination.get('lat'), destination.get('lng'))
         distance = geodesic(destination_point, pilot_point).km
-        if distance <= 0.05:
+        if distance <= 0.020 and ride.is_boarded:
             ride = await database_sync_to_async(Ride.objects.get)(id=ride_id)
             ride.status = 'payment'
             await database_sync_to_async(ride.save)()
@@ -293,13 +297,19 @@ class PaymentConsumer(AsyncWebsocketConsumer):
         ride_id = event['ride_id']
 
         ride = await database_sync_to_async(Ride.objects.get)(id=ride_id)
+        pilot_id = await database_sync_to_async(lambda: ride.pilot.id)()
+        pilot = await database_sync_to_async(User.objects.get)(id=pilot_id)
         invoice = await database_sync_to_async(Invoice.objects.get)(ride=ride)
 
-        ride.status = 'finished'
-        invoice.status = 'completed'
+        await database_sync_to_async(lambda: setattr(ride, 'status', 'finished'))()
+        await database_sync_to_async(lambda: setattr(invoice, 'status', 'completed'))()
+
+        tax_value = (float(invoice.value) - 1.99) * 0.1
+        await database_sync_to_async(lambda: setattr(pilot, 'balance', float(pilot.balance) + float(invoice.value) - tax_value))()
 
         await database_sync_to_async(ride.save)()
         await database_sync_to_async(invoice.save)()
+        await database_sync_to_async(pilot.save)()
 
 
         await self.channel_layer.group_send(

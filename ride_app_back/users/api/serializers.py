@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from ride_app_back.users.models import User
-from rest_framework_simplejwt.tokens import RefreshToken
 from dj_rest_auth.serializers import JWTSerializer
 from ride_app_back.motorcycles.api.serializers import MotorcycleSerializer
 from dj_rest_auth.registration.serializers import RegisterSerializer
@@ -27,8 +26,8 @@ class UserCreateSerializer(JWTSerializer, UserSerializer):
 class CustomRegisterSerializer(RegisterSerializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
+    email = serializers.EmailField(required=False)
     cpf = serializers.CharField(required=True)
-    picture = serializers.ImageField(required=True)
 
     def get_cleaned_data(self):
         data = super().get_cleaned_data()

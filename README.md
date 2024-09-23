@@ -1,48 +1,61 @@
-# ride-app-back
+# Motocar
 
-ride app back
+Este é um guia para inicialização local do backend do projeto Motocar
 
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-## Settings
+# Executando o Projeto Django
 
-Moved to [settings](http://cookiecutter-django.readthedocs.io/en/latest/settings.html).
+Siga os passos abaixo para configurar e executar o projeto Django localmente.
 
-## Basic Commands
+## Pré-requisitos
 
-### Setting Up Your Users
+Certifique-se de ter as seguintes ferramentas instaladas em sua máquina:
 
-- To create a **normal user account**, just go to Sign Up and fill out the form. Once you submit it, you'll see a "Verify Your E-mail Address" page. Go to your console to see a simulated email verification message. Copy the link into your browser. Now the user's email should be verified and ready to go.
+- [Python 3.x](https://www.python.org/)
+- [pip](https://pip.pypa.io/en/stable/)
+- [Postgresql](https://www.postgresql.org/) 
 
-- To create a **superuser account**, use this command:
+## Clonando o Repositório
 
-      $ python manage.py createsuperuser
+1. Clone o repositório do projeto:
+   ```bash
+   git clone https://github.com/seu-usuario/nome-do-repositorio.git
 
-For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
+2. Crie e ative um ambiente virtual
+   ```bash
+   pyton -m venv .venv
+   .venv/scripts/activate
+   #ou
+   source .venv/bin/activate
 
-### Type checks
+3. Instale as depedências
+   ```bash
+   pip install -r requirements/local.txt
+   pip install -r requirements/base.txt
+   pip install -r requirements/production.txt
 
-Running type checks with mypy:
+4. Crie um arquivo .env na raiz e coloque o seguinte código:
+   ```bash
+   DATABASE_URL=postgres://usuario_banco:senha_banco@127.0.0.1:5432/ride_app
+   CELERY_BROKER_URL=redis://localhost:6379/0
+   USE_DOCKER=No
+   ASAAS_API_KEY=chave_api_asaas
 
-    $ mypy ride_app_back
+5. Rode as migrações
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
 
-### Test coverage
+6. Carregue dados iniciais
+   ```bash
+   python manage.py loaddata groups.json
 
-To run the tests, check your test coverage, and generate an HTML coverage report:
+7. Crie um superusuário
+   ```bash
+   python manage.py createsuperuser
 
-    $ coverage run -m pytest
-    $ coverage html
-    $ open htmlcov/index.html
-
-#### Running tests with pytest
-
-    $ pytest
-
-### Live reloading and Sass CSS compilation
-
-Moved to [Live reloading and SASS compilation](https://cookiecutter-django.readthedocs.io/en/latest/developing-locally.html#sass-compilation-live-reloading).
-
-## Deployment
-
-The following details how to deploy this application.
+8. Rode o servidor
+   ```bash
+   python manage.py runserver 0.0.0.0:8000
