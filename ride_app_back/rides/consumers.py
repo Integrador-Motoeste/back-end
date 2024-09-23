@@ -213,10 +213,12 @@ class RideExecutionConsumer(AsyncWebsocketConsumer):
         longitude = event['longitude']
         destination = event['destination']
 
+        ride = await database_sync_to_async(Ride.objects.get)(id=ride_id)
+
         pilot_point = (latitude, longitude)
         destination_point = (destination.get('lat'), destination.get('lng'))
         distance = geodesic(destination_point, pilot_point).km
-        if distance <= 0.020:
+        if distance <= 0.020 and ride.is_boarded:
             ride = await database_sync_to_async(Ride.objects.get)(id=ride_id)
             ride.status = 'payment'
             await database_sync_to_async(ride.save)()
