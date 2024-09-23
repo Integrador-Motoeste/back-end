@@ -11,7 +11,7 @@ from rest_framework import status
 
 
 class MotorcycleViewSet(ListModelMixin, RetrieveModelMixin, GenericViewSet):
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
     queryset = Motorcycle.objects.all()
     serializer_class = MotorcycleSerializer
 

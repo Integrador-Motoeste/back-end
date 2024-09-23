@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from drf_spectacular.utils import extend_schema
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import ParseError
-
+from rest_framework.permissions import IsAuthenticated
 from ride_app_back.users.models import User
 
 from .serializers import UserSerializer, TurnUserPilotSerializer, PilotSerializer
@@ -61,6 +61,7 @@ class UserViewSet(ModelViewSet):
 
 class TurnPilot(GenericViewSet):
     serializer_class = TurnUserPilotSerializer
+    permission_classes = []
 
     @action(detail=False, methods=['post'])
     def post(self, request):
@@ -84,18 +85,18 @@ class TurnPilot(GenericViewSet):
             pilot = request.user
             for attr, value in pilot_data.items():
                 setattr(pilot, attr, value)
-            
+
             # Altera o grupo do piloto
             pilot.groups.remove(Group.objects.get(id=1))  # Remove do grupo antigo
             pilot.groups.add(Group.objects.get(id=2))  # Adiciona ao grupo dos pilotos
-    
+
             # Salva o usuário atualizado
             pilot.save()
-    
+
             # Verifica e valida os dados da moto
             if motorcycle_data is None:
                 return Response({"error": "Motorcycle data is required"}, status=status.HTTP_400_BAD_REQUEST)
-    
+
             motorcycle_serializer = MotorcycleSerializer(data=motorcycle_data)
             if motorcycle_serializer.is_valid():
                 motorcycle = motorcycle_serializer.save()

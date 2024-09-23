@@ -28,6 +28,7 @@ class CustomRegisterSerializer(RegisterSerializer):
     last_name = serializers.CharField(required=True)
     email = serializers.EmailField(required=False)
     cpf = serializers.CharField(required=True)
+    picture = serializers.ImageField(required=False)
 
     def get_cleaned_data(self):
         data = super().get_cleaned_data()
@@ -35,6 +36,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         data['last_name'] = self.validated_data.get('last_name', '')
         data['email'] = self.validated_data.get('email', '')
         data['cpf'] = self.validated_data.get('cpf', '')
+        data['picture'] = self.validated_data.get('picture', '')
         return data
 
     def validate_email(self, email):
@@ -57,7 +59,7 @@ class CustomRegisterSerializer(RegisterSerializer):
 class PilotSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'cpf', 'cnh']
+        fields = ['id', 'cnh']
 
 
 class TurnUserPilotSerializer(serializers.Serializer):
